@@ -7,7 +7,7 @@ import { Option } from "../../types/option";
 type Props<T extends FieldValues> = {
   readonly name: Path<T>;
   readonly label: string;
-  readonly options: Option[];
+  readonly options?: Option[];
 };
 
 export default function RHFAutocomplete<T extends FieldValues>({
@@ -15,7 +15,7 @@ export default function RHFAutocomplete<T extends FieldValues>({
   options,
   label,
 }: Props<T>) {
-  const { control } = useFormContext();
+  const { control } = useFormContext<T>();
 
   return (
     <Controller
@@ -23,12 +23,12 @@ export default function RHFAutocomplete<T extends FieldValues>({
       name={name}
       render={({ field: { value, onChange, ref }, fieldState: { error } }) => (
         <Autocomplete
-          options={options}
+          options={options || []}
           value={value.map((id: string) =>
-            options.find((options) => options.id === id)
+            options?.find((options) => options.id === id)
           )}
           getOptionLabel={(option) =>
-            options.find((o) => o.id === option.id)?.label ?? ""
+            options?.find((o) => o.id === option.id)?.label ?? ""
           }
           isOptionEqualToValue={(option, newValue) => option.id === newValue.id}
           onChange={(_, newValue) => {
@@ -42,6 +42,7 @@ export default function RHFAutocomplete<T extends FieldValues>({
               fullWidth
               inputRef={ref}
               error={!!error}
+              helperText={error?.message}
               label={label}
             />
           )}
